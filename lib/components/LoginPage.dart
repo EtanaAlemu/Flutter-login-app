@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:login/components/ForgetPasswordPage.dart';
 import 'package:login/components/SignupPage.dart';
+import 'package:http/http.dart';
+import 'dart:convert';
+
 
 import 'HomePage.dart';
 
@@ -15,6 +18,35 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+
+  void login(String email , password) async {
+
+    try{
+
+      Response response = await post(
+          Uri.parse('https://reqres.in/api/login'),
+          body: {
+            'email' : email,
+            'password' : password
+          }
+      );
+
+      if(response.statusCode == 200){
+
+        var data = jsonDecode(response.body.toString());
+        print(data['token']);
+        print('Login successfully');
+        Navigator.push(
+            context, MaterialPageRoute(builder: (_) => HomePage()));
+      }else {
+        print('failed');
+      }
+    }catch(e){
+      print(e.toString());
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,6 +83,7 @@ class _LoginState extends State<Login> {
                           }
                           return null;
                         },
+                        controller: emailController,
                     decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: 'Email',
@@ -69,6 +102,7 @@ class _LoginState extends State<Login> {
                     return null;
                   },
                   obscureText: true,
+                  controller: passwordController,
                   decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'Password',
@@ -101,8 +135,7 @@ class _LoginState extends State<Login> {
                   onPressed: () {
                     // Validate returns true if the form is valid, or false otherwise.
                     if (_formKey.currentState!.validate()) {
-                      Navigator.push(
-                          context, MaterialPageRoute(builder: (_) => HomePage()));
+                      login(emailController.text.toString(),passwordController.text.toString());
                     }
                   },
                   child: const Text( 'Login',
