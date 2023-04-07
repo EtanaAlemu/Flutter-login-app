@@ -70,7 +70,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                     if (_formKey.currentState!.validate()) {
                       Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => LoginDemo()));
+                          MaterialPageRoute(builder: (_) => Login()));
                     }
                   },
                   child: const Text('Send',
